@@ -1,0 +1,12 @@
+test
+.codeclimate.yml
+.editorconfig
+.eslintrc
+.gitignore
+.npmignore
+.nyc_output
+coverage
+circle.yml
+rollup.config.js
+rollem.config.js
+demo
