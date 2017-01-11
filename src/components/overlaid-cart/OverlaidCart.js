@@ -1,15 +1,30 @@
 import React from 'react'
 import Component from '@flute-ui/component'
+import OverlaidPanel from '../overlaid-panel/OverlaidPanel'
+import OverlaidCartDetails from '../overlaid-cart-details/OverlaidCartDetails'
 
-export class OverlaidCart extends React.Component {
+import './OverlaidCart.css'
+
+export default class OverlaidCart extends React.Component {
+
+  static defaultProps = {
+    open: false
+  }
 
   render () {
+
+    const model = {
+      overlaidPanel: {
+        open: this.props.open
+      }
+    }
+
     return (
-      <Component className="OverlaidCart" {...this}>
-        cart...
+      <Component className="sui-OverlaidCart" {...this} {...model}>
+        <OverlaidPanel {...model.overlaidPanel}>
+          <OverlaidCartDetails />
+        </OverlaidPanel>
       </Component>
     )
   }
 }
-
-export default OverlaidCart
