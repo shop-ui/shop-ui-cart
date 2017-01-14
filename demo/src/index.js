@@ -6,13 +6,23 @@ import './index.css';
 
 class App extends React.Component {
 
+  state = {
+    isOpen: false
+  }
+
   render() {
     return (
-      <div className="App">
-        <button>Show Cart</button>
-        <OverlaidCart/>
+      <div className="Demo">
+        <button onClick={()=> this.showCart()}>Show Cart</button>
+        <OverlaidCart className="Demo-overlaidCart" open={this.state.isOpen}/>
       </div>
-    );
+    )
+  }
+
+  showCart () {
+    this.setState({
+      isOpen: true
+    })
   }
 }
 

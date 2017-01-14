@@ -9,9 +9,9 @@ const configs = []
 
 const common = {
   entry: 'src/index.js',
+  dest: `lib/index.js`,
   format: 'cjs',
   sourceMap: true,
-  dest: `lib/index.js`,
   external: prepExternalsForIndexJs(),
   plugins: [
     postcss({
@@ -23,8 +23,8 @@ const common = {
     }),
     babel({
       exclude: 'node_modules/**',
-      externalHelpers: true,
       plugins: [
+        'external-helpers',
         'add-module-exports',
         'transform-class-properties'
       ],
@@ -48,7 +48,10 @@ export default [
 ].concat(configs)
 
 function prepExternalsForIndexJs () {
-  const src = getSrcFiles('components')
+  const fileFilter = (filePath) => {
+    return filePath.endsWith('.js')
+  }
+  const src = getSrcFiles('components', fileFilter)
   const externals = []
 
   src.fileNames.forEach(fileName => {
@@ -63,27 +66,28 @@ function prepExternalsForIndexJs () {
 function prepComponentConfigs () {
   const src = getSrcFiles()
 
-  console.log(`----------------- src`); // TODO: Remove
-  console.log(src); // TODO: Remove
-  console.log(`-----------------`); // TODO: Remove
-
-  src.fileNames.forEach(fileName => {
-    configs.push(Object.assign({}, common, {
-      entry: `src/${fileName}`,
-      dest: `lib/${fileName}`,
-      external: [
-        path.join(src.dir, 'SvgIcon.js')
-      ]
-    }))
-
-    console.log(`----------------- configs`); // TODO: Remove
-    console.log(configs); // TODO: Remove
-    console.log(`-----------------`); // TODO: Remove
+  src.fileNames.forEach(filePath => {
+    const fileName = lastPartOf(filePath, '/')
+    if(!fileName.endsWith('.css') && !fileName.endsWith('.spec.js')) {
+      configs.push(Object.assign({}, common, {
+        entry: `src/${filePath}`,
+        dest: `lib/${filePath}`,
+        external: prepExternalsForIndexJs()
+      }))
+    }
   })
 }
 
-function getSrcFiles (nestedDir='') {
+function getSrcFiles (nestedDir='', filter = () => true) {
   const dir = path.join(process.cwd(), 'src', nestedDir)
   const fileNames = readDir(dir)
-  return {dir, fileNames}
+  return {
+    dir,
+    fileNames: fileNames.filter(filter)
+  }
+}
+
+function lastPartOf(str, delimiter = ',') {
+  const parts = str.split(delimiter)
+  return parts[parts.length - 1]
 }
